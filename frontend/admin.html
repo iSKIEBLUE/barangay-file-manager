@@ -585,7 +585,45 @@
     document.getElementById("sidebar-overlay").classList.remove("open");
   }
 
+  function applyMobileLayout() {
+    var aside = document.querySelector("aside");
+    var topbar = document.querySelector(".mobile-topbar");
+    var appWrapper = document.querySelector(".app-wrapper");
+    var mainEl = document.querySelector("main");
+    var isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+      // Show mobile topbar
+      topbar.style.setProperty("display", "flex", "important");
+      // Hide sidebar by default (slide off left)
+      aside.style.setProperty("position", "fixed", "important");
+      aside.style.setProperty("top", "0", "important");
+      aside.style.setProperty("left", "0", "important");
+      aside.style.setProperty("height", "100vh", "important");
+      aside.style.setProperty("z-index", "300", "important");
+      aside.style.setProperty("transform", aside.classList.contains("open") ? "translateX(0)" : "translateX(-100%)", "important");
+      aside.style.setProperty("transition", "transform 0.25s ease", "important");
+      // Stack layout vertically
+      appWrapper.style.setProperty("display", "block", "important");
+      mainEl.style.setProperty("padding", "16px 12px", "important");
+    } else {
+      topbar.style.setProperty("display", "none", "important");
+      aside.style.removeProperty("position");
+      aside.style.removeProperty("top");
+      aside.style.removeProperty("left");
+      aside.style.removeProperty("height");
+      aside.style.removeProperty("z-index");
+      aside.style.removeProperty("transform");
+      aside.style.removeProperty("transition");
+      appWrapper.style.setProperty("display", "flex", "important");
+      mainEl.style.removeProperty("padding");
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
+    applyMobileLayout();
+    window.addEventListener("resize", applyMobileLayout);
+
     initAdminPage().then(function() {
       var n = document.getElementById("admin-name");
       var nm = document.getElementById("admin-name-mobile");
@@ -597,6 +635,20 @@
       });
     });
   });
+
+  // Override openSidebar/closeSidebar to also update transform
+  function openSidebar() {
+    var aside = document.querySelector("aside");
+    aside.classList.add("open");
+    aside.style.setProperty("transform", "translateX(0)", "important");
+    document.getElementById("sidebar-overlay").style.setProperty("display", "block", "important");
+  }
+  function closeSidebar() {
+    var aside = document.querySelector("aside");
+    aside.classList.remove("open");
+    aside.style.setProperty("transform", "translateX(-100%)", "important");
+    document.getElementById("sidebar-overlay").style.removeProperty("display");
+  }
 
   // Override showTab to work with style.display
   function showTab(tab) {
