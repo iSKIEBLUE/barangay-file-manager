@@ -162,8 +162,8 @@ async function initResidentPage() {
 }
 
 function showAuthSection() {
-  document.getElementById("auth-section").classList.remove("hidden");
-  document.getElementById("dashboard-section").classList.add("hidden");
+  document.getElementById("auth-section").style.display = "block";
+  document.getElementById("dashboard-section").style.display = "none";
   document.getElementById("header-user").classList.add("hidden");
   var bell = document.getElementById("notif-bell-wrap");
   if (bell) bell.style.display = "none";
@@ -192,8 +192,8 @@ function showAuthSection() {
 }
 
 function showResidentDashboard(user) {
-  document.getElementById("auth-section").classList.add("hidden");
-  document.getElementById("dashboard-section").classList.remove("hidden");
+  document.getElementById("auth-section").style.display = "none";
+  document.getElementById("dashboard-section").style.display = "block";
   document.getElementById("header-user").classList.remove("hidden");
   var bell = document.getElementById("notif-bell-wrap");
   if (bell) bell.style.display = "flex";
@@ -305,11 +305,11 @@ function showRequirements() {
   var t    = document.getElementById("doc-type-select").value;
   var box  = document.getElementById("requirements-box");
   var list = document.getElementById("requirements-list");
-  if (!t) { box.classList.add("hidden"); return; }
+  if (!t) { box.style.display = "none"; return; }
   list.innerHTML = (DOCUMENT_CATALOGUE[t] || []).map(function(r) {
-    return '<li class="flex gap-2"><span class="text-blue-500">✓</span><span>' + r + '</span></li>';
+    return '<li style="display:flex;gap:8px"><span style="color:#3b82f6">✓</span><span>' + r + '</span></li>';
   }).join("");
-  box.classList.remove("hidden");
+  box.style.display = "block";
 }
 
 // ─── Submit request ───────────────────────────────────────────────────────
@@ -325,7 +325,7 @@ async function onSubmitRequest(e) {
     showToast("Request submitted!", "success");
     document.getElementById("doc-type-select").value = "";
     document.getElementById("purpose-input").value   = "";
-    document.getElementById("requirements-box").classList.add("hidden");
+    document.getElementById("requirements-box").style.display = "none";
     loadResidentRequests();
   } catch (err) {
     showToast(err.message, "error");

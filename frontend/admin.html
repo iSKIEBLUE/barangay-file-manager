@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Barangay File Manager — Admin Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:wght@400;600&display=swap" rel="stylesheet" />
@@ -373,132 +372,132 @@
 
 <div class="app-wrapper">
 
-<!-- SIDEBAR -->
-<aside>
-  <div class="sidebar-brand">
-    <div class="brand-icon">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 9.5L12 3L21 9.5V20C21 20.5523 20.5523 21 20 21H15V15H9V21H4C3.44772 21 3 20.5523 3 20V9.5Z" fill="#0f1f3d"/>
-      </svg>
-    </div>
-    <div class="brand-text">
-      <h1>Barangay File Manager</h1>
-      <p>Admin Panel</p>
-    </div>
-  </div>
-
-  <div class="sidebar-user">
-    <p id="admin-name">—</p>
-    <p>Secretary / Admin</p>
-  </div>
-
-  <nav class="sidebar-nav">
-    <button id="nav-dashboard" class="nav-btn nav-active" onclick="switchAdminTab('dashboard')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Dashboard
-    </button>
-    <button id="nav-requests" class="nav-btn" onclick="switchAdminTab('requests')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      All Requests
-    </button>
-    <button id="nav-messages" class="nav-btn" onclick="showTab('messages'); loadAllMessages();">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Messages
-      <span class="msg-badge" id="msg-badge">0</span>
-    </button>
-  </nav>
-
-  <div class="sidebar-logout">
-    <button id="admin-logout-btn">← Log Out</button>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<main>
-
-  <!-- DASHBOARD TAB -->
-  <div id="tab-dashboard">
-    <div class="page-header">
-      <h2>Good day, Secretary</h2>
-      <p>Here's an overview of your document requests.</p>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card blue" onclick="filterRequests('')" style="cursor:pointer" title="All Requests">
-        <p class="stat-label">Total Requests</p>
-        <p id="stat-total" class="stat-value">—</p>
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 9.5L12 3L21 9.5V20C21 20.5523 20.5523 21 20 21H15V15H9V21H4C3.44772 21 3 20.5523 3 20V9.5Z" fill="#0f1f3d"/>
+        </svg>
       </div>
-      <div class="stat-card yellow" onclick="filterRequests('Submitted')" style="cursor:pointer" title="Pending">
-        <p class="stat-label">Pending</p>
-        <p id="stat-pending" class="stat-value">—</p>
-        <p class="stat-sub">Submitted + Under Review</p>
-      </div>
-      <div class="stat-card green" onclick="filterRequests('Approved (Ready for Pickup)')" style="cursor:pointer" title="Ready for Pickup">
-        <p class="stat-label">Ready for Pickup</p>
-        <p id="stat-approved" class="stat-value">—</p>
-      </div>
-      <div class="stat-card indigo" onclick="filterRequests('Approved (Ready for Pickup)')" style="cursor:pointer" title="Scheduled Today">
-        <p class="stat-label">Scheduled Today</p>
-        <p id="stat-today" class="stat-value">—</p>
+      <div class="brand-text">
+        <h1>Barangay File Manager</h1>
+        <p>Admin Panel</p>
       </div>
     </div>
 
-    <div class="tip-strip">
-      <strong>Tip:</strong> Switch to <em>All Requests</em> to manage submissions. Use the <em>Manage</em> button to update status, set pickup schedules, leave messages, and send Mock SMS notifications.
+    <div class="sidebar-user">
+      <p id="admin-name">—</p>
+      <p>Secretary / Admin</p>
     </div>
-  </div>
 
-  <!-- REQUESTS TAB -->
-  <div id="tab-requests" style="display:none">
-    <div class="section-header">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-        <h2>All Requests</h2>
-        <span id="filter-label" style="font-size:13px;color:var(--text-muted);font-weight:500"></span>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <select id="requests-filter" onchange="applyRequestsFilter()" style="border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:13px;font-family:'Outfit',sans-serif;background:#fff;color:var(--text);outline:none;cursor:pointer">
-          <option value="">All Statuses</option>
-          <option value="Submitted">Submitted</option>
-          <option value="Under Review">Under Review</option>
-          <option value="Approved (Ready for Pickup)">Ready for Pickup</option>
-          <option value="Claimed">Claimed</option>
-        </select>
-        <button class="refresh-btn" onclick="loadAdminRequests(); loadAnalytics();">↻ Refresh</button>
-      </div>
-    </div>
-    <div class="table-wrap">
-      <div style="overflow-x:auto">
-        <table>
-          <thead>
-          <tr>
-            <th>Resident</th>
-            <th>Document</th>
-            <th>Status</th>
-            <th>Submitted</th>
-            <th>Pickup</th>
-            <th>Action</th>
-          </tr>
-          </thead>
-          <tbody id="requests-tbody">
-          <tr><td colspan="6" style="text-align:center;padding:40px;color:#94a3b8;font-size:14px">Loading requests…</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+    <nav class="sidebar-nav">
+      <button id="nav-dashboard" class="nav-btn nav-active" onclick="switchAdminTab('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button id="nav-requests" class="nav-btn" onclick="switchAdminTab('requests')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        All Requests
+      </button>
+      <button id="nav-messages" class="nav-btn" onclick="showTab('messages'); loadAllMessages();">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Messages
+        <span class="msg-badge" id="msg-badge">0</span>
+      </button>
+    </nav>
 
-  <!-- MESSAGES TAB -->
-  <div id="tab-messages" style="display:none">
-    <div class="section-header">
-      <h2>Messages</h2>
-      <button class="refresh-btn" onclick="loadAllMessages();">↻ Refresh</button>
+    <div class="sidebar-logout">
+      <button id="admin-logout-btn">← Log Out</button>
     </div>
-    <div id="messages-thread-list" class="msg-thread-list">
-      <div class="empty-state">Loading messages…</div>
-    </div>
-  </div>
+  </aside>
 
-</main>
+  <!-- MAIN -->
+  <main>
+
+    <!-- DASHBOARD TAB -->
+    <div id="tab-dashboard">
+      <div class="page-header">
+        <h2>Good day, Secretary</h2>
+        <p>Here's an overview of your document requests.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card blue" onclick="filterRequests('')" style="cursor:pointer" title="All Requests">
+          <p class="stat-label">Total Requests</p>
+          <p id="stat-total" class="stat-value">—</p>
+        </div>
+        <div class="stat-card yellow" onclick="filterRequests('Submitted')" style="cursor:pointer" title="Pending">
+          <p class="stat-label">Pending</p>
+          <p id="stat-pending" class="stat-value">—</p>
+          <p class="stat-sub">Submitted + Under Review</p>
+        </div>
+        <div class="stat-card green" onclick="filterRequests('Approved (Ready for Pickup)')" style="cursor:pointer" title="Ready for Pickup">
+          <p class="stat-label">Ready for Pickup</p>
+          <p id="stat-approved" class="stat-value">—</p>
+        </div>
+        <div class="stat-card indigo" onclick="filterRequests('Approved (Ready for Pickup)')" style="cursor:pointer" title="Scheduled Today">
+          <p class="stat-label">Scheduled Today</p>
+          <p id="stat-today" class="stat-value">—</p>
+        </div>
+      </div>
+
+      <div class="tip-strip">
+        <strong>Tip:</strong> Switch to <em>All Requests</em> to manage submissions. Use the <em>Manage</em> button to update status, set pickup schedules, leave messages, and send Mock SMS notifications.
+      </div>
+    </div>
+
+    <!-- REQUESTS TAB -->
+    <div id="tab-requests" style="display:none">
+      <div class="section-header">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <h2>All Requests</h2>
+          <span id="filter-label" style="font-size:13px;color:var(--text-muted);font-weight:500"></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="requests-filter" onchange="applyRequestsFilter()" style="border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:13px;font-family:'Outfit',sans-serif;background:#fff;color:var(--text);outline:none;cursor:pointer">
+            <option value="">All Statuses</option>
+            <option value="Submitted">Submitted</option>
+            <option value="Under Review">Under Review</option>
+            <option value="Approved (Ready for Pickup)">Ready for Pickup</option>
+            <option value="Claimed">Claimed</option>
+          </select>
+          <button class="refresh-btn" onclick="loadAdminRequests(); loadAnalytics();">↻ Refresh</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+            <tr>
+              <th>Resident</th>
+              <th>Document</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Pickup</th>
+              <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="requests-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:40px;color:#94a3b8;font-size:14px">Loading requests…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGES TAB -->
+    <div id="tab-messages" style="display:none">
+      <div class="section-header">
+        <h2>Messages</h2>
+        <button class="refresh-btn" onclick="loadAllMessages();">↻ Refresh</button>
+      </div>
+      <div id="messages-thread-list" class="msg-thread-list">
+        <div class="empty-state">Loading messages…</div>
+      </div>
+    </div>
+
+  </main>
 
 </div><!-- end .app-wrapper -->
 

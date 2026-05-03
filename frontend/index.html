@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Barangay File Manager — Resident Portal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
@@ -189,43 +188,41 @@
   </section>
 
   <!-- DASHBOARD SECTION -->
-  <section id="dashboard-section" class="hidden space-y-8">
-    <div class="bg-white rounded-2xl shadow-md p-6">
-      <h2 class="font-display text-xl font-bold text-gray-800 mb-4">Request a Document</h2>
-      <form id="request-form" class="space-y-4">
+  <section id="dashboard-section" class="hidden" style="display:none">
+    <div style="background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(15,31,61,0.08);padding:24px;margin-bottom:24px">
+      <h2 style="font-family:'Lora',serif;font-size:20px;font-weight:700;color:#1a1a2e;margin:0 0 16px">Request a Document</h2>
+      <form id="request-form" style="display:flex;flex-direction:column;gap:14px">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Document Type <span class="text-red-500">*</span>
+          <label style="display:block;font-size:13px;font-weight:600;color:#0f1f3d;margin-bottom:6px">
+            Document Type <span style="color:#ef4444">*</span>
           </label>
-          <select id="doc-type-select"
-                  class="w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+          <select id="doc-type-select" style="width:100%;border:1.5px solid #dde3ef;border-radius:9px;padding:10px 14px;font-size:14px;font-family:'Outfit',sans-serif;background:#fff;outline:none">
             <option value="">— Select a document —</option>
           </select>
         </div>
-        <div id="requirements-box" class="hidden bg-blue-50 border border-blue-200 rounded-xl p-4">
-          <p class="text-sm font-semibold text-blue-800 mb-2">Requirements to bring:</p>
-          <ul id="requirements-list" class="text-sm text-blue-700 space-y-1 list-none pl-0"></ul>
+        <div id="requirements-box" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:16px">
+          <p style="font-size:13px;font-weight:600;color:#1e40af;margin:0 0 8px">Requirements to bring:</p>
+          <ul id="requirements-list" style="font-size:13px;color:#1d4ed8;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px"></ul>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Purpose / Reason</label>
-          <textarea id="purpose-input" rows="3"
-                    placeholder="e.g., For employment requirements"
-                    class="w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+          <label style="display:block;font-size:13px;font-weight:600;color:#0f1f3d;margin-bottom:6px">Purpose / Reason</label>
+          <textarea id="purpose-input" rows="3" placeholder="e.g., For employment requirements"
+                    style="width:100%;border:1.5px solid #dde3ef;border-radius:9px;padding:10px 14px;font-size:14px;font-family:'Outfit',sans-serif;resize:none;outline:none"></textarea>
         </div>
         <button id="submit-request-btn" type="submit"
-                class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors">
+                style="background:#1d4ed8;color:#fff;border:none;border-radius:9px;padding:11px 24px;font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:background 0.2s;align-self:flex-start">
           Submit Request
         </button>
       </form>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-md p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="font-display text-xl font-bold text-gray-800">My Requests</h2>
-        <button onclick="loadResidentRequests()" class="text-sm text-blue-600 hover:underline">↻ Refresh</button>
+    <div style="background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(15,31,61,0.08);padding:24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2 style="font-family:'Lora',serif;font-size:20px;font-weight:700;color:#1a1a2e;margin:0">My Requests</h2>
+        <button onclick="loadResidentRequests()" style="font-size:13px;color:#2563eb;background:none;border:none;cursor:pointer;font-family:'Outfit',sans-serif">↻ Refresh</button>
       </div>
-      <div id="requests-container" class="space-y-3">
-        <p class="text-gray-400 text-sm">Loading…</p>
+      <div id="requests-container">
+        <p style="color:#9ca3af;font-size:14px">Loading…</p>
       </div>
     </div>
   </section>
