@@ -25,11 +25,12 @@
     .font-display { font-family: 'Lora', serif; }
 
     header { background: var(--navy); border-bottom: 3px solid var(--gold); }
-    .header-inner { max-width: 1100px; margin: 0 auto; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; }
-    .header-logo { display: flex; align-items: center; gap: 14px; }
-    .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .logo-text h1 { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 18px; color: #fff; letter-spacing: -0.3px; margin: 0; }
-    .logo-text p { font-size: 12px; color: var(--gold); margin: 0; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 500; }
+    .header-inner { max-width: 1100px; margin: 0 auto; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .header-logo { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-text { min-width: 0; }
+    .logo-text h1 { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 15px; color: #fff; letter-spacing: -0.3px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .logo-text p { font-size: 10px; color: var(--gold); margin: 0; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 500; }
 
     #header-user { display: none; align-items: center; gap: 20px; }
     #header-user:not(.hidden) { display: flex; }
@@ -56,9 +57,18 @@
     body.dark .admin-hint { color: #6b7280; }
     body.dark footer { color: #4b5563; }
 
-    main { max-width: 1100px; margin: 0 auto; padding: 56px 32px; }
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 16px; }
 
     #auth-section { max-width: 440px; margin: 0 auto; animation: fadeUp 0.4s ease both; }
+
+    @media (max-width: 480px) {
+      main { padding: 20px 12px; }
+      .auth-card { padding: 24px 16px; }
+      .auth-card h2 { font-size: 22px; }
+      #resident-name, #resident-email { max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      #logout-btn { padding: 6px 10px; font-size: 12px; }
+      .logo-text h1 { font-size: 13px; }
+    }
 
     .tab-bar { display: flex; margin-bottom: 28px; background: var(--cream-dark); border-radius: 10px; padding: 4px; }
     .tab-bar button { flex: 1; padding: 10px; font-size: 14px; font-weight: 600; border: none; background: transparent; border-radius: 7px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; font-family: 'Outfit', sans-serif; }
@@ -106,7 +116,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span id="notif-count" style="position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 4px">0</span>
         </button>
-        <div id="notif-panel" style="display:none;position:absolute;top:44px;right:0;width:320px;background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(15,31,61,0.18);border:1px solid #e2e8f0;z-index:100;overflow:hidden;color:#1a1a2e">
+        <div id="notif-panel" style="display:none;position:absolute;top:44px;right:0;width:min(320px, calc(100vw - 32px));background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(15,31,61,0.18);border:1px solid #e2e8f0;z-index:100;overflow:hidden;color:#1a1a2e">
           <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-weight:600;font-size:14px;color:#1f2937">Notifications</div>
           <div id="notif-list"></div>
         </div>
