@@ -23,18 +23,18 @@
       --sidebar-w: 240px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Outfit', sans-serif; background: #f4f6fb; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    body { font-family: 'Outfit', sans-serif; background: #f4f6fb; color: var(--text); min-height: 100vh; display: block !important; }
     .font-display { font-family: 'Lora', serif; }
 
     /* ── LAYOUT WRAPPER ── */
-    .app-wrapper { display: flex; flex: 1; min-height: 0; }
+    .app-wrapper { display: flex !important; min-height: 100vh; }
 
     /* ── SIDEBAR ── */
     aside {
-      width: var(--sidebar-w);
+      width: var(--sidebar-w) !important;
       min-height: 100vh;
-      background: var(--navy);
-      display: flex;
+      background: var(--navy) !important;
+      display: flex !important;
       flex-direction: column;
       position: sticky;
       top: 0;
@@ -142,11 +142,11 @@
     .sidebar-logout button:hover { background: rgba(255,255,255,0.14); color: #fff; }
 
     /* ── MAIN ── */
-    main { flex: 1; padding: 36px 40px; overflow-y: auto; background: #f4f6fb; min-width: 0; }
+    main { flex: 1 !important; padding: 36px 40px; overflow-y: auto; background: #f4f6fb; min-width: 0; }
 
     /* ── MOBILE TOP BAR ── */
     .mobile-topbar {
-      display: none;
+      display: none !important;
       background: var(--navy);
       border-bottom: 3px solid var(--gold);
       padding: 12px 16px;
@@ -154,7 +154,7 @@
       justify-content: space-between;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 300;
     }
     .mobile-topbar-title { color: #fff; font-weight: 700; font-size: 15px; }
     .hamburger-btn {
@@ -170,45 +170,45 @@
       display: none;
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.5);
-      z-index: 150;
+      z-index: 250;
     }
+    .sidebar-overlay.open { display: block !important; }
 
     /* ── STAT CARDS ── */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
 
-    @media (max-width: 900px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    @media screen and (max-width: 900px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
     }
 
-    @media (max-width: 768px) {
-      .mobile-topbar { display: flex; }
-      .app-wrapper { flex-direction: column; }
+    @media screen and (max-width: 768px) {
+      .mobile-topbar { display: flex !important; }
+      .app-wrapper { display: block !important; }
 
       aside {
-        position: fixed;
-        top: 0; left: 0;
-        height: 100vh;
-        transform: translateX(-100%);
-        min-height: 100vh;
+        position: fixed !important;
+        top: 0 !important; left: 0 !important;
+        height: 100vh !important;
+        width: var(--sidebar-w) !important;
+        transform: translateX(-100%) !important;
+        z-index: 300 !important;
       }
-      aside.open { transform: translateX(0); }
-      .sidebar-overlay.open { display: block; }
+      aside.open { transform: translateX(0) !important; }
 
-      main { padding: 20px 16px; }
-      .page-header h2 { font-size: 22px; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      .stat-value { font-size: 26px; }
-      .form-grid-2 { grid-template-columns: 1fr; }
-      .info-grid { grid-template-columns: 1fr; }
-      .modal-card { border-radius: 14px; }
-      table { font-size: 12px; }
-      thead th, tbody td { padding: 10px 10px; }
+      main { padding: 20px 16px !important; }
+      .page-header h2 { font-size: 22px !important; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+      .stat-value { font-size: 26px !important; }
+      .form-grid-2 { grid-template-columns: 1fr !important; }
+      .info-grid { grid-template-columns: 1fr !important; }
+      table { font-size: 12px !important; }
+      thead th, tbody td { padding: 10px 8px !important; }
     }
 
-    @media (max-width: 480px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      main { padding: 16px 12px; }
-      .stat-card { padding: 14px; }
+    @media screen and (max-width: 480px) {
+      main { padding: 16px 12px !important; }
+      .stat-card { padding: 14px !important; }
+      .stat-value { font-size: 22px !important; }
     }
 
     .stat-card {
@@ -576,15 +576,6 @@
 
 <script src="app.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    initAdminPage().then(() => {
-      // Sync admin name to mobile topbar
-      var n = document.getElementById("admin-name");
-      var nm = document.getElementById("admin-name-mobile");
-      if (n && nm) nm.textContent = n.textContent;
-    });
-  });
-
   function openSidebar() {
     document.querySelector("aside").classList.add("open");
     document.getElementById("sidebar-overlay").classList.add("open");
@@ -593,10 +584,17 @@
     document.querySelector("aside").classList.remove("open");
     document.getElementById("sidebar-overlay").classList.remove("open");
   }
-  // Close sidebar when a nav item is clicked on mobile
-  document.querySelectorAll(".nav-btn, .sidebar-logout button").forEach(function(btn) {
-    btn.addEventListener("click", function() {
-      if (window.innerWidth <= 768) closeSidebar();
+
+  document.addEventListener("DOMContentLoaded", function() {
+    initAdminPage().then(function() {
+      var n = document.getElementById("admin-name");
+      var nm = document.getElementById("admin-name-mobile");
+      if (n && nm) nm.textContent = n.textContent;
+    });
+    document.querySelectorAll(".nav-btn, .sidebar-logout button").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        if (window.innerWidth <= 768) closeSidebar();
+      });
     });
   });
 
