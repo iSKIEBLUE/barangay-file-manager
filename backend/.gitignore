@@ -1,0 +1,17 @@
+# Environment variables — NEVER commit real credentials
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
