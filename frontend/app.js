@@ -110,15 +110,51 @@ function fmtD(iso) {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("en-PH", { year:"numeric", month:"short", day:"numeric" });
 }
+function isDark() { return document.body.classList.contains('dark'); }
+
 function badge(status) {
   var m = {
-    "Submitted":                   "background:#fef9c3;color:#854d0e",
-    "Under Review":                "background:#dbeafe;color:#1e40af",
-    "Approved (Ready for Pickup)": "background:#dcfce7;color:#166534",
-    "Claimed":                     "background:#e5e7eb;color:#374151",
+    "Submitted":                   isDark() ? "background:#422006;color:#fcd34d"   : "background:#fef9c3;color:#854d0e",
+    "Under Review":                isDark() ? "background:#1e3a5f;color:#93c5fd"   : "background:#dbeafe;color:#1e40af",
+    "Approved (Ready for Pickup)": isDark() ? "background:#052e16;color:#86efac"   : "background:#dcfce7;color:#166534",
+    "Claimed":                     isDark() ? "background:#1f2937;color:#9ca3af"   : "background:#e5e7eb;color:#374151",
   };
-  return '<span style="' + (m[status]||"background:#f3f4f6;color:#374151") +
+  return '<span style="' + (m[status]||"background:#374151;color:#d1d5db") +
       ';padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600">' + status + '</span>';
+}
+
+function reqCard(r) {
+  var dark = isDark();
+  var cardBg   = dark ? "#1f2937" : "#fff";
+  var cardBdr  = dark ? "#374151" : "#e5e7eb";
+  var textMain = dark ? "#f9fafb" : "#1f2937";
+  var textMut  = dark ? "#9ca3af" : "#6b7280";
+  var msgsBg   = dark ? "#111827" : "#f9fafb";
+  var pickup = r.pickup_date
+      ? '<p style="color:' + (dark?"#86efac":"#15803d") + ';font-size:13px;margin-top:4px">Pickup: ' + r.pickup_date + (r.pickup_time ? " at " + r.pickup_time : "") + '</p>'
+      : "";
+  return '<div style="border:1px solid ' + cardBdr + ';border-radius:12px;padding:16px;background:' + cardBg + ';margin-bottom:8px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">' +
+      '<div style="flex:1;min-width:0">' +
+      '<p style="font-weight:600;color:' + textMain + ';word-break:break-word">' + r.document_type + '</p>' +
+      '<p style="font-size:12px;color:' + textMut + '">Submitted: ' + fmtDT(r.created_at) + '</p>' +
+      (r.purpose ? '<p style="font-size:12px;color:' + textMut + ';word-break:break-word">Purpose: ' + r.purpose + '</p>' : '') +
+      '</div>' +
+      '<div style="flex-shrink:0">' + badge(r.status) + '</div>' +
+      '</div>' +
+      pickup +
+      '<button id="tgl-' + r.id + '" style="font-size:12px;color:#60a5fa;cursor:pointer;margin-top:8px;background:none;border:none;padding:0">Messages</button>' +
+      '<div id="pan-' + r.id + '" style="display:none;margin-top:8px">' +
+      '<div id="mls-' + r.id + '" style="max-height:160px;overflow-y:auto;border:1px solid ' + cardBdr + ';border-radius:8px;padding:8px;background:' + msgsBg + ';font-size:12px;margin-bottom:8px">' +
+      '<p style="color:#9ca3af;font-style:italic">Loading...</p>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px">' +
+      '<input id="inp-' + r.id + '" type="text" placeholder="Type a message..." ' +
+      'style="flex:1;min-width:0;border:1px solid ' + cardBdr + ';border-radius:8px;padding:6px 12px;font-size:14px;background:' + msgsBg + ';color:' + textMain + '"/>' +
+      '<button id="snd-' + r.id + '" style="flex-shrink:0;background:#2563eb;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;cursor:pointer">Send</button>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
 }
 
 // =========================================================================
@@ -368,33 +404,6 @@ async function loadResidentRequests() {
   }
 }
 
-function reqCard(r) {
-  var pickup = r.pickup_date
-      ? '<p style="color:#15803d;font-size:13px;margin-top:4px">Pickup: ' + r.pickup_date + (r.pickup_time ? " at " + r.pickup_time : "") + '</p>'
-      : "";
-  return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:16px;background:#fff;margin-bottom:8px">' +
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">' +
-      '<div>' +
-      '<p style="font-weight:600;color:#1f2937">' + r.document_type + '</p>' +
-      '<p style="font-size:12px;color:#9ca3af">Submitted: ' + fmtDT(r.created_at) + '</p>' +
-      (r.purpose ? '<p style="font-size:12px;color:#6b7280">Purpose: ' + r.purpose + '</p>' : '') +
-      '</div>' +
-      badge(r.status) +
-      '</div>' +
-      pickup +
-      '<button id="tgl-' + r.id + '" style="font-size:12px;color:#2563eb;cursor:pointer;margin-top:8px;background:none;border:none;padding:0">Messages</button>' +
-      '<div id="pan-' + r.id + '" style="display:none;margin-top:8px">' +
-      '<div id="mls-' + r.id + '" style="max-height:160px;overflow-y:auto;border:1px solid #e5e7eb;border-radius:8px;padding:8px;background:#f9fafb;font-size:12px;margin-bottom:8px">' +
-      '<p style="color:#9ca3af;font-style:italic">Loading...</p>' +
-      '</div>' +
-      '<div style="display:flex;gap:8px">' +
-      '<input id="inp-' + r.id + '" type="text" placeholder="Type a message..." ' +
-      'style="flex:1;border:1px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:14px"/>' +
-      '<button id="snd-' + r.id + '" style="background:#2563eb;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;cursor:pointer">Send</button>' +
-      '</div>' +
-      '</div>' +
-      '</div>';
-}
 
 async function toggleMsgs(id) {
   var pan = document.getElementById("pan-" + id);
