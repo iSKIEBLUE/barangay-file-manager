@@ -123,16 +123,20 @@ function badge(status) {
       ';padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600">' + status + '</span>';
 }
 
-function reqCard(r) {
+function reqCard(r, unread) {
   var dark = isDark();
   var cardBg   = dark ? "#1f2937" : "#fff";
   var cardBdr  = dark ? "#374151" : "#e5e7eb";
   var textMain = dark ? "#f9fafb" : "#1f2937";
   var textMut  = dark ? "#9ca3af" : "#6b7280";
   var msgsBg   = dark ? "#111827" : "#f9fafb";
+  unread = unread || 0;
   var pickup = r.pickup_date
       ? '<p style="color:' + (dark?"#86efac":"#15803d") + ';font-size:13px;margin-top:4px">Pickup: ' + r.pickup_date + (r.pickup_time ? " at " + r.pickup_time : "") + '</p>'
       : "";
+  var msgBtn = '<button id="tgl-' + r.id + '" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#60a5fa;cursor:pointer;margin-top:8px;background:none;border:none;padding:0">Messages' +
+      (unread > 0 ? '<span style="background:#ef4444;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 4px">' + unread + '</span>' : '') +
+      '</button>';
   return '<div style="border:1px solid ' + cardBdr + ';border-radius:12px;padding:16px;background:' + cardBg + ';margin-bottom:8px">' +
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">' +
       '<div style="flex:1;min-width:0">' +
@@ -143,7 +147,7 @@ function reqCard(r) {
       '<div style="flex-shrink:0">' + badge(r.status) + '</div>' +
       '</div>' +
       pickup +
-      '<button id="tgl-' + r.id + '" style="font-size:12px;color:#60a5fa;cursor:pointer;margin-top:8px;background:none;border:none;padding:0">Messages</button>' +
+      msgBtn +
       '<div id="pan-' + r.id + '" style="display:none;margin-top:8px">' +
       '<div id="mls-' + r.id + '" style="max-height:160px;overflow-y:auto;border:1px solid ' + cardBdr + ';border-radius:8px;padding:8px;background:' + msgsBg + ';font-size:12px;margin-bottom:8px">' +
       '<p style="color:#9ca3af;font-style:italic">Loading...</p>' +
@@ -392,7 +396,21 @@ async function loadResidentRequests() {
       c.innerHTML = '<p style="color:#6b7280;font-size:14px;text-align:center;padding:32px 0">No requests yet.</p>';
       return;
     }
-    c.innerHTML = list.map(reqCard).join("");
+
+    // Fetch unread counts for each request in parallel
+    var unreadMap = {};
+    await Promise.all(list.map(async function(r) {
+      try {
+        var msgs = await apiFetch("/requests/" + r.id + "/messages", "GET");
+        var lastSeen = parseInt(localStorage.getItem("bfm_seen_" + r.id) || "0");
+        var unread = msgs.filter(function(m) {
+          return m.sender_role === "admin" && m.id > lastSeen;
+        }).length;
+        unreadMap[r.id] = unread;
+      } catch(_) { unreadMap[r.id] = 0; }
+    }));
+
+    c.innerHTML = list.map(function(r) { return reqCard(r, unreadMap[r.id] || 0); }).join("");
     list.forEach(function(r) {
       var t = document.getElementById("tgl-" + r.id);
       var s = document.getElementById("snd-" + r.id);
@@ -409,16 +427,35 @@ async function toggleMsgs(id) {
   var pan = document.getElementById("pan-" + id);
   var shown = pan.style.display !== "none";
   pan.style.display = shown ? "none" : "block";
-  if (!shown) await loadMsgs(id);
+  if (!shown) {
+    await loadMsgs(id);
+    // Mark all admin messages as seen
+    try {
+      var msgs = await apiFetch("/requests/" + id + "/messages", "GET");
+      var adminMsgs = msgs.filter(function(m) { return m.sender_role === "admin"; });
+      if (adminMsgs.length) {
+        var lastId = adminMsgs[adminMsgs.length - 1].id;
+        localStorage.setItem("bfm_seen_" + id, lastId);
+      }
+      // Remove unread badge from button
+      var tgl = document.getElementById("tgl-" + id);
+      if (tgl) {
+        var badge = tgl.querySelector("span");
+        if (badge) badge.remove();
+      }
+    } catch(_) {}
+  }
 }
 
 async function loadMsgs(id) {
+  var dark = isDark();
   var el = document.getElementById("mls-" + id);
   try {
     var msgs = await apiFetch("/requests/" + id + "/messages", "GET");
     if (!msgs.length) { el.innerHTML = '<p style="color:#9ca3af;font-style:italic">No messages yet.</p>'; return; }
     el.innerHTML = msgs.map(function(m) {
-      return '<div style="color:' + (m.sender_role==="admin" ? "#1d4ed8" : "#374151") + ';margin-bottom:4px">' +
+      var isAdmin = m.sender_role === "admin";
+      return '<div style="color:' + (isAdmin ? (dark?"#93c5fd":"#1d4ed8") : (dark?"#e5e7eb":"#374151")) + ';margin-bottom:4px">' +
           '<strong>' + m.full_name + ':</strong> ' + m.body + '</div>';
     }).join("");
     el.scrollTop = el.scrollHeight;
@@ -690,12 +727,16 @@ async function checkResidentNotifications() {
     if (badge) { badge.textContent = count; badge.style.display = count > 0 ? "flex" : "none"; }
 
     if (notifList) {
+      var dark = isDark();
+      var itemBdr = dark ? "#374151" : "#f3f4f6";
+      var titleClr = dark ? "#f9fafb" : "#0f1f3d";
+      var subClr   = dark ? "#9ca3af" : "#64748b";
       notifList.innerHTML = !stored.length
           ? '<p style="padding:16px;font-size:13px;color:#9ca3af;text-align:center">No new notifications</p>'
           : stored.map(function(n, i) {
-        return '<div onclick="goToReqMsg(' + n.reqId + ',' + i + ')" style="padding:12px 16px;border-bottom:1px solid #f3f4f6;cursor:pointer;font-size:13px">' +
-            '<p style="font-weight:600;color:#0f1f3d">' + (n.type === "message" ? "New Reply" : "Status Update") + '</p>' +
-            '<p style="color:#64748b;margin-top:2px">' + n.text + '</p></div>';
+        return '<div onclick="goToReqMsg(' + n.reqId + ',' + i + ')" style="padding:12px 16px;border-bottom:1px solid ' + itemBdr + ';cursor:pointer;font-size:13px">' +
+            '<p style="font-weight:600;color:' + titleClr + '">' + (n.type === "message" ? "New Reply" : "Status Update") + '</p>' +
+            '<p style="color:' + subClr + ';margin-top:2px">' + n.text + '</p></div>';
       }).join("") + '<div style="padding:10px;text-align:center"><button onclick="clearNotifs()" style="font-size:12px;color:#ef4444;background:none;border:none;cursor:pointer;font-family:Outfit,sans-serif">Clear all</button></div>';
     }
   } catch(_) {}
