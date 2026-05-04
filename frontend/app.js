@@ -679,7 +679,8 @@ function applyRequestsFilter() {
 // RESIDENT — NOTIFICATIONS
 // =========================================================================
 
-var _lastNotifState = JSON.parse(localStorage.getItem("bfm_notif_state") || "{}");
+var _lastNotifState = {};
+var _notifFirstRun = true;
 
 async function checkResidentNotifications() {
   try {
@@ -689,7 +690,7 @@ async function checkResidentNotifications() {
     if (!bell) return;
 
     var newNotifs = [];
-    var isFirstRun = Object.keys(_lastNotifState).length === 0;
+    var isFirstRun = _notifFirstRun;
 
     list.forEach(function(r) {
       var key = "req_" + r.id;
@@ -717,10 +718,10 @@ async function checkResidentNotifications() {
       } catch(_) {}
     }));
 
-    localStorage.setItem("bfm_notif_state", JSON.stringify(_lastNotifState));
+    _notifFirstRun = false;
 
     var stored = JSON.parse(localStorage.getItem("bfm_notifs") || "[]");
-    if (newNotifs.length) { stored = stored.concat(newNotifs); localStorage.setItem("bfm_notifs", JSON.stringify(stored)); }
+    if (newNotifs.length) { stored = stored.concat(newNotifs); try { localStorage.setItem("bfm_notifs", JSON.stringify(stored)); } catch(_) {} }
 
     var count = stored.length;
     var badge = document.getElementById("notif-count");
