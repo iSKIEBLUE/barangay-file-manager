@@ -254,7 +254,7 @@ function showResidentDashboard(user) {
   loadResidentRequests();
   // Initialize notification state and start polling
   checkResidentNotifications();
-  setInterval(checkResidentNotifications, 30000);
+  setInterval(checkResidentNotifications, 10000);
 }
 
 // ─── Login ────────────────────────────────────────────────────────────────
@@ -680,7 +680,8 @@ function applyRequestsFilter() {
 // =========================================================================
 
 var _lastNotifState = {};
-var _notifFirstRun = true;
+try { _lastNotifState = JSON.parse(localStorage.getItem("bfm_notif_state") || "{}"); } catch(_) {}
+var _notifInitialized = Object.keys(_lastNotifState).length > 0;
 
 async function checkResidentNotifications() {
   try {
@@ -690,7 +691,7 @@ async function checkResidentNotifications() {
     if (!bell) return;
 
     var newNotifs = [];
-    var isFirstRun = _notifFirstRun;
+    var isFirstRun = !_notifInitialized;
 
     list.forEach(function(r) {
       var key = "req_" + r.id;
@@ -718,7 +719,8 @@ async function checkResidentNotifications() {
       } catch(_) {}
     }));
 
-    _notifFirstRun = false;
+    _notifInitialized = true;
+    try { localStorage.setItem("bfm_notif_state", JSON.stringify(_lastNotifState)); } catch(_) {}
 
     var stored = JSON.parse(localStorage.getItem("bfm_notifs") || "[]");
     if (newNotifs.length) { stored = stored.concat(newNotifs); try { localStorage.setItem("bfm_notifs", JSON.stringify(stored)); } catch(_) {} }
