@@ -111,11 +111,22 @@
     body.dark #notif-panel { background: #1f2937; border-color: #374151; color: #e5e7eb; }
     body.dark #notif-panel > div:first-child { border-color: #374151; color: #f9fafb; }
 
-    /* ── MOBILE ── */
-    @media (max-width: 480px) {
-      main { padding: 20px 12px; }
-      .auth-card { padding: 24px 16px; }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .header-inner { padding: 10px 12px; gap: 6px; }
+      .logo-text h1 { font-size: 13px; }
+      #resident-name, #resident-email { max-width: 70px; font-size: 11px; }
+      #logout-btn { font-size: 11px; padding: 5px 9px; }
+      #header-user { gap: 8px; }
+      main { padding: 16px 10px; }
+      .auth-card { padding: 20px 14px; border-radius: 12px; }
+      .auth-card h2 { font-size: 22px; }
+      .btn-primary { font-size: 14px; padding: 12px; }
+      .dash-card { padding: 16px 12px; border-radius: 12px; }
+      .dash-row { flex-direction: column; align-items: flex-start; gap: 8px; }
     }
+
   </style>
 </head>
 <body>
