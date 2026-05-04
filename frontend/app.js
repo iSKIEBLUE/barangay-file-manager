@@ -162,8 +162,8 @@ async function initResidentPage() {
 }
 
 function showAuthSection() {
-  document.getElementById("auth-section").style.display = "block";
-  document.getElementById("dashboard-section").style.display = "none";
+  document.getElementById("auth-section").classList.remove("hidden");
+  document.getElementById("dashboard-section").classList.add("hidden");
   document.getElementById("header-user").classList.add("hidden");
   var bell = document.getElementById("notif-bell-wrap");
   if (bell) bell.style.display = "none";
@@ -192,8 +192,8 @@ function showAuthSection() {
 }
 
 function showResidentDashboard(user) {
-  document.getElementById("auth-section").style.display = "none";
-  document.getElementById("dashboard-section").style.display = "block";
+  document.getElementById("auth-section").classList.add("hidden");
+  document.getElementById("dashboard-section").classList.remove("hidden");
   document.getElementById("header-user").classList.remove("hidden");
   var bell = document.getElementById("notif-bell-wrap");
   if (bell) bell.style.display = "flex";
@@ -281,12 +281,24 @@ function setupRegisterForm() {
 
 function switchTab(tab) {
   var isLogin = tab === "login";
-  document.getElementById("login-form").classList.toggle("hidden", !isLogin);
-  document.getElementById("register-form").classList.toggle("hidden", isLogin);
-  document.getElementById("tab-login").classList.toggle("border-blue-600", isLogin);
-  document.getElementById("tab-login").classList.toggle("text-blue-600", isLogin);
-  document.getElementById("tab-register").classList.toggle("border-blue-600", !isLogin);
-  document.getElementById("tab-register").classList.toggle("text-blue-600", !isLogin);
+  var loginForm    = document.getElementById("login-form");
+  var registerForm = document.getElementById("register-form");
+
+  if (isLogin) {
+    registerForm.classList.add("hidden");
+    loginForm.classList.remove("hidden");
+    loginForm.classList.remove("slide-in-right", "slide-in-left");
+    void loginForm.offsetWidth; // force reflow
+    loginForm.classList.add("slide-in-left");
+  } else {
+    loginForm.classList.add("hidden");
+    registerForm.classList.remove("hidden");
+    registerForm.classList.remove("slide-in-right", "slide-in-left");
+    void registerForm.offsetWidth;
+    registerForm.classList.add("slide-in-right");
+  }
+  document.getElementById("tab-login").classList.toggle("active", isLogin);
+  document.getElementById("tab-register").classList.toggle("active", !isLogin);
 }
 
 // ─── Document type dropdown ───────────────────────────────────────────────
@@ -305,11 +317,11 @@ function showRequirements() {
   var t    = document.getElementById("doc-type-select").value;
   var box  = document.getElementById("requirements-box");
   var list = document.getElementById("requirements-list");
-  if (!t) { box.style.display = "none"; return; }
+  if (!t) { box.classList.add("hidden"); return; }
   list.innerHTML = (DOCUMENT_CATALOGUE[t] || []).map(function(r) {
-    return '<li style="display:flex;gap:8px"><span style="color:#3b82f6">✓</span><span>' + r + '</span></li>';
+    return '<li style="display:flex;gap:6px"><span style="color:#3b82f6">✓</span><span>' + r + '</span></li>';
   }).join("");
-  box.style.display = "block";
+  box.classList.remove("hidden");
 }
 
 // ─── Submit request ───────────────────────────────────────────────────────
@@ -325,7 +337,7 @@ async function onSubmitRequest(e) {
     showToast("Request submitted!", "success");
     document.getElementById("doc-type-select").value = "";
     document.getElementById("purpose-input").value   = "";
-    document.getElementById("requirements-box").style.display = "none";
+    document.getElementById("requirements-box").classList.add("hidden");
     loadResidentRequests();
   } catch (err) {
     showToast(err.message, "error");
@@ -362,12 +374,12 @@ function reqCard(r) {
       : "";
   return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:16px;background:#fff;margin-bottom:8px">' +
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">' +
-      '<div style="flex:1;min-width:0">' +
-      '<p style="font-weight:600;color:#1f2937;word-break:break-word">' + r.document_type + '</p>' +
+      '<div>' +
+      '<p style="font-weight:600;color:#1f2937">' + r.document_type + '</p>' +
       '<p style="font-size:12px;color:#9ca3af">Submitted: ' + fmtDT(r.created_at) + '</p>' +
-      (r.purpose ? '<p style="font-size:12px;color:#6b7280;word-break:break-word">Purpose: ' + r.purpose + '</p>' : '') +
+      (r.purpose ? '<p style="font-size:12px;color:#6b7280">Purpose: ' + r.purpose + '</p>' : '') +
       '</div>' +
-      '<div style="flex-shrink:0">' + badge(r.status) + '</div>' +
+      badge(r.status) +
       '</div>' +
       pickup +
       '<button id="tgl-' + r.id + '" style="font-size:12px;color:#2563eb;cursor:pointer;margin-top:8px;background:none;border:none;padding:0">Messages</button>' +
@@ -377,8 +389,8 @@ function reqCard(r) {
       '</div>' +
       '<div style="display:flex;gap:8px">' +
       '<input id="inp-' + r.id + '" type="text" placeholder="Type a message..." ' +
-      'style="flex:1;min-width:0;border:1px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:14px"/>' +
-      '<button id="snd-' + r.id + '" style="flex-shrink:0;background:#2563eb;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;cursor:pointer">Send</button>' +
+      'style="flex:1;border:1px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:14px"/>' +
+      '<button id="snd-' + r.id + '" style="background:#2563eb;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;cursor:pointer">Send</button>' +
       '</div>' +
       '</div>' +
       '</div>';
